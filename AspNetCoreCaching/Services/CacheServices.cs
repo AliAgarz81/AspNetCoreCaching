@@ -32,7 +32,11 @@ public class CacheServices : ICacheService
     public async Task SetAsync<T>(string key, T value, CancellationToken cancellationToken = default) where T : class
     {
         string cacheValue = JsonConvert.SerializeObject(value);
-        await _distributedCache.SetStringAsync(key, cacheValue, cancellationToken);
+        var cacheOptions = new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(30)
+        };
+        await _distributedCache.SetStringAsync(key, cacheValue, cacheOptions, cancellationToken);
         CacheKeys.TryAdd(key, false);
     }
 
